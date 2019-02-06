@@ -1,5 +1,8 @@
+import re
+
 class Lexer:
-    def __init__(self):
+    def __init__(self, input):
+        self.input = input
         self.symbol = None
         self.EOL = -3
         self.EOF = -2
@@ -14,3 +17,9 @@ class Lexer:
         self.RIGHT = 7
         self.TRUE_LITERAL = "true"
         self.FALSE_LITERAL = "false"
+    
+    def next_symbol(self):
+        tokens = re.compile("(A[1-9][0-9]*)|(&)|(v)|(~)|(\()|(\))")
+        # create token stream from input and implement lexer code from java example:
+        # https://unnikked.ga/how-to-build-a-boolean-expression-evaluator-518e9e068a65
+        

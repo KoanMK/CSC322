@@ -4,8 +4,7 @@ import re
 
 if __name__ == '__main__':
     # get user input
-    var = raw_input("Enter expression: ")
-    print var
+    input = raw_input("Enter expression: ")
     # parse input
-    # x = lexer.Lexer()
-    # print x.EOF
+    x = lexer.Lexer(input)
+    print x.input
