@@ -1,25 +1,38 @@
 import re
+import tokenizer
 
 class Lexer:
-    def __init__(self, input):
-        self.input = input
+    def __init__(self):
         self.symbol = None
-        self.EOL = -3
-        self.EOF = -2
         self.INVALID = -1
         self.NONE = 0
-        self.OR = 1
-        self.AND = 2
-        self.NOT = 3
-        self.TRUE = 4
-        self.FALSE = 5
-        self.LEFT = 6
-        self.RIGHT = 7
-        self.TRUE_LITERAL = "true"
-        self.FALSE_LITERAL = "false"
+        self.OROP = 1
+        self.ANDOP = 2
+        self.NEGOP = 3
+        self.IMPOP = 4
+        self.LPAREN = 5
+        self.RPAREN = 6
+        self.switcher = {
+            "INVALID": self.INVALID,
+            "v": self.OROP,
+            "&": self.ANDOP,
+            "~": self.NEGOP,
+            "->": self.IMPOP,
+            "(": self.LPAREN,
+            ")": self.RPAREN,
+        }
+        # get input from user
+        self.input = raw_input("Enter expression: ")
+        # create stream from input
+        self.stream = tokenizer.Tokenizer(self.input)
     
+    # get next symbol and return it
     def next_symbol(self):
-        tokens = re.compile("(A[1-9][0-9]*)|(&)|(v)|(~)|(\()|(\))")
-        # create token stream from input and implement lexer code from java example:
-        # https://unnikked.ga/how-to-build-a-boolean-expression-evaluator-518e9e068a65
-        
+        try:
+        #    for x in range(0, 4):
+            next = self.stream.next_token()
+            self.symbol = self.switcher.get(next, next)
+            print self.symbol
+            return self.symbol
+        except IOError:
+            print "An error occured when accessing next token."
