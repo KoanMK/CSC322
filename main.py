@@ -8,3 +8,4 @@ if __name__ == '__main__':
     # parse input
     lexer = lexer.Lexer()
     parser = recursive_descent_parser.RecursiveDescentParser()
+    print "hello"
