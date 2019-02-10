@@ -7,5 +7,6 @@ if __name__ == '__main__':
     # input = raw_input("Enter expression: ")
     # parse input
     lexer = lexer.Lexer()
-    parser = recursive_descent_parser.RecursiveDescentParser()
-    print "hello"
+    parser = recursive_descent_parser.RecursiveDescentParser(lexer)
+
+    parser.build()

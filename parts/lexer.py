@@ -4,14 +4,14 @@ import tokenizer
 class Lexer:
     def __init__(self):
         self.symbol = None
-        self.INVALID = -1
-        self.NONE = 0
-        self.OROP = 1
-        self.ANDOP = 2
-        self.NEGOP = 3
-        self.IMPOP = 4
-        self.LPAREN = 5
-        self.RPAREN = 6
+        self.INVALID = "-1"
+        self.NONE = "0"
+        self.OROP = "1"
+        self.ANDOP = "2"
+        self.NEGOP = "3"
+        self.IMPOP = "4"
+        self.LPAREN = "5"
+        self.RPAREN = "6"
         self.switcher = {
             "INVALID": self.INVALID,
             "v": self.OROP,
@@ -32,7 +32,7 @@ class Lexer:
         #    for x in range(0, 4):
             next = self.stream.next_token()
             self.symbol = self.switcher.get(next, next)
-            print self.symbol
+            # print self.symbol
             return self.symbol
         except IOError:
             print "An error occured when accessing next token."

@@ -1,13 +1,18 @@
 import expression
 
 class Terminal(expression.Expression):
-    def __init__(self, var, value):
+    def __init__(self, var):
         self.__var = var
-        self.__value = value
     
-    def var(self):
+    def set_var(self, var):
+        self.__var = var
+
+    def set_value(self, value):
+        self.__value = value
+
+    def get_var(self):
         return str(self.__var)
 
-    def value(self):
+    def get_value(self):
         return str(self.__value)
  
