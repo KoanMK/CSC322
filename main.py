@@ -11,8 +11,8 @@ if __name__ == '__main__':
         if input == "vcheck1":
             lexer = lexer.Lexer()
             parser = recursive_descent_parser.RecursiveDescentParser(lexer)
-
             parser.build()
+            
             print "INITIAL TREE: "
             parser.print_tree(parser.root, 0)
 
