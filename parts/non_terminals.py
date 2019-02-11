@@ -45,4 +45,3 @@ class LParen(NonTerminal):
 class RParen(NonTerminal):
     def __str__(self):
         return "RPAREN"
-

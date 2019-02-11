@@ -3,8 +3,6 @@ import re
 
 class RecursiveDescentParser:
     def __init__(self, lexer):
-        # transcribe parser code from java example:
-        # https://unnikked.ga/how-to-build-a-boolean-expression-evaluator-518e9e068a65
         self.lexer = lexer
         self.root = None
         self.symbol = None
@@ -14,30 +12,25 @@ class RecursiveDescentParser:
         self.symbol = self.lexer.next_symbol()
         try:
             var = re.findall("^A[1-9][0-9]*$", self.symbol)
-            # print "ATOM IS: " + self.symbol
         except TypeError:
             var = None
-            print "Regex messed up for some reason..."
 
         if var:
-            # terminal = terminals.Terminal(self.symbol)
-            # self.root = terminal
-            self.root = self.symbol
+            terminal = terminals.Terminal(self.symbol)
+            self.root = terminal
             self.symbol = self.lexer.next_symbol()
-            # print "ATOM: ROOT IS " + self.root.get_var()
-            print "ATOM: ROOT IS " + self.root
+
         elif self.symbol is self.lexer.NEGOP:
             neg = non_terminals.NegOP()
             self.atom()
             neg.set_child(self.root)
             self.root = neg
-            print "NEG: CHILD IS: " + str(self.root.get_child())
+
         elif self.symbol is self.lexer.LPAREN:
-            # print "LPAREN1: ROOT IS " + self.symbol
             self.sent()
             self.symbol = self.lexer.next_symbol()
         else:
-            raise ValueError('Expression Malformed')
+            raise ValueError('Malformed Expression')
 
     # LIT ::= ATOM | NEGOP ATOM
     def lit(self):
@@ -47,7 +40,6 @@ class RecursiveDescentParser:
             self.atom()
             neg.set_child(self.root)
             self.root = neg
-            print "NEG: CHILD IS: " + str(self.root.get_child())
     
     # CONJ ::= LIT{ANDOP LIT}
     def conj(self):
@@ -58,7 +50,6 @@ class RecursiveDescentParser:
             self.lit()
             andop.set_right(self.root)
             self.root = andop
-            print "CONJ - LEFT: " + str(self.root.get_left()) + ", RIGHT: " + str(self.root.get_right())
 
     # DISJ ::= CONJ{OROP CONJ}
     def disj(self):
@@ -69,7 +60,6 @@ class RecursiveDescentParser:
             self.conj()
             orop.set_right(self.root)
             self.root = orop
-            print "DISJ - LEFT: " + str(self.root.get_left()) + ", RIGHT: " + str(self.root.get_right())
 
     # SENT ::= DISJ | DISJ IMPOP SENT
     def sent(self):
@@ -80,8 +70,23 @@ class RecursiveDescentParser:
             self.sent()
             impop.set_right(self.root)
             self.root = impop
-            print "IMPOP - LEFT: " + str(self.root.get_left()) + ", RIGHT: " + str(self.root.get_right())
 
     def build(self):
         self.sent()
         return self.root
+
+    # prints the tree to console
+    def print_tree(self, tree, level):
+        print str(level) + ". " + str(tree)
+        try:
+            self.print_tree(tree.get_left(), level+1)
+        except AttributeError:
+            pass
+        try:
+            self.print_tree(tree.get_right(), level+1)
+        except AttributeError:
+            pass
+        try:
+            self.print_tree(tree.get_child(), level+1)
+        except AttributeError:
+            pass

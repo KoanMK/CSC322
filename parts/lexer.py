@@ -29,10 +29,8 @@ class Lexer:
     # get next symbol and return it
     def next_symbol(self):
         try:
-        #    for x in range(0, 4):
             next = self.stream.next_token()
             self.symbol = self.switcher.get(next, next)
-            # print self.symbol
             return self.symbol
         except IOError:
             print "An error occured when accessing next token."

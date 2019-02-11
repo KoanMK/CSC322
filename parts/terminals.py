@@ -3,6 +3,9 @@ import expression
 class Terminal(expression.Expression):
     def __init__(self, var):
         self.__var = var
+
+    def __str__(self):
+        return str(self.__var)
     
     def set_var(self, var):
         self.__var = var
