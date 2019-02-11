@@ -15,8 +15,8 @@ Run command:
 > $python main.py
 
 ### Commands
-vcheck1
+> vcheck1
 - Allows you to input an expression to be translated into a CNF tree.
 
-exit
+> exit
 - Exits the program.
