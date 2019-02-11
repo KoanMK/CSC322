@@ -11,8 +11,8 @@ From Task 1: The files read in an expression, convert it to tokens, create an in
 Tasks 2, 3 and 4 were not completed.
 
 ## Usage
-Run command:
-$python main.py
+Run command:  
+> $python main.py
 
 ### Commands
 vcheck1
