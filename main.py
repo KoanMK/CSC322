@@ -21,5 +21,6 @@ if __name__ == '__main__':
 
             print "\nCNF TREE: "
             parser.print_tree(x, 0)
+            break
         else:
             print "Sorry, that command isn't implemented yet..."
