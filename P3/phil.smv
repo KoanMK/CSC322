@@ -1,8 +1,8 @@
 --
 -- CSC 322 Project 3
 --
--- Name:
--- Vnum:
+-- Name: Nigel Decontie
+-- Vnum: V00853112
 --
 --
 MODULE main
@@ -49,7 +49,7 @@ ASSIGN
   next(left)  := case
     (state = done) : nobody; -- drop chopstick
     --
-    -- if hungry and left chopstick if free, take it
+    -- if hungry and left chopstick is free, take it
     --
     (state=hungry) & leftfree : i;
     TRUE : left;
@@ -77,6 +77,8 @@ ASSIGN
 
 -- add specifications here 
 
--- safety:
+SPEC -- safety:
+  AG ((state = eating) -> (gotleft & gotright))
 
--- liveness:
+SPEC -- liveness:
+  AG ((state = hungry) -> AF (state = eating))
