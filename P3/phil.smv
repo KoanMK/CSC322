@@ -7,78 +7,92 @@
 --
 MODULE main
   
-VAR
-  chopsticks : array 0..4 of {nobody,0,1,2,3,4}; -- who holds the chopstick.
-  --
-  -- Philosopher i has chopstick i on left and chopstick
-  -- (i + 1) mod 5 on right
-  --
-  p0 : process philosopher(0,chopsticks[0],chopsticks[1]);
-  p1 : process philosopher(1,chopsticks[1],chopsticks[2]);
-  p2 : process philosopher(2,chopsticks[2],chopsticks[3]);
-  p3 : process philosopher(3,chopsticks[3],chopsticks[4]);
-  p4 : process philosopher(4,chopsticks[4],chopsticks[0]);
-  
-ASSIGN
-  --
-  -- Initially, all chopsticks are free
-  --
-  init(chopsticks[0]) := nobody;
-  init(chopsticks[1]) := nobody;
-  init(chopsticks[2]) := nobody;
-  init(chopsticks[3]) := nobody;
-  init(chopsticks[4]) := nobody;
+  VAR
+    -- Ticket to pass around table to ensure only one philosopher eats at a time
+    ticket : {nobody,0,1,2,3,4};
+    chopsticks : array 0..4 of {nobody,0,1,2,3,4}; -- who holds the chopstick.
+    --
+    -- Philosopher i has chopstick i on left and chopstick
+    -- (i + 1) mod 5 on right
+    --
+    p0 : process philosopher(0,chopsticks[0],chopsticks[1],ticket);
+    p1 : process philosopher(1,chopsticks[1],chopsticks[2],ticket);
+    p2 : process philosopher(2,chopsticks[2],chopsticks[3],ticket);
+    p3 : process philosopher(3,chopsticks[3],chopsticks[4],ticket);
+    p4 : process philosopher(4,chopsticks[4],chopsticks[0],ticket);
     
-MODULE philosopher(i,left,right)
-  
-VAR
-  state : {thinking, hungry, eating, done};
-  
-DEFINE
-  --
-  -- These are just abbreviations, not state variables
-  --
-  gotleft := (left=i);
-  gotright := (right=i);
-  leftfree := (left=nobody);
-  rightfree := (right=nobody);
+  ASSIGN
+    -- Initialize ticket to no one
+    init(ticket) := nobody;
+    --
+    -- Initially, all chopsticks are free
+    --
+    init(chopsticks[0]) := nobody;
+    init(chopsticks[1]) := nobody;
+    init(chopsticks[2]) := nobody;
+    init(chopsticks[3]) := nobody;
+    init(chopsticks[4]) := nobody;
     
-ASSIGN
-  init(state) := thinking;
-
-  next(left)  := case
-    (state = done) : nobody; -- drop chopstick
+MODULE philosopher(i,left,right,ticket)
+  
+  VAR
+    state : {thinking, hungry, eating, done};
+    
+  DEFINE
     --
-    -- if hungry and left chopstick is free, take it
+    -- These are just abbreviations, not state variables
     --
-    (state=hungry) & leftfree : i;
-    TRUE : left;
-  esac;
+    gotleft := (left=i);
+    gotright := (right=i);
+    leftfree := (left=nobody);
+    rightfree := (right=nobody);
+      
+  ASSIGN
+    init(state) := thinking;
 
-  next(right) := case
-    (state = done) : nobody; -- drop chopstick
-    --
-    -- if hungry and have left chopstick and right is free, take it
-    --
-    (state=hungry) & gotleft & rightfree : i; 
-    TRUE : right;
-  esac;
+    -- grab ticket
+    next(ticket)  := 
+      case
+        (ticket = nobody) & (state = hungry) : i;
+        (ticket = i) & (state = done) : nobody;
+        TRUE : ticket;
+      esac;
 
-  next(state) := case
-    (state=thinking) : {thinking, hungry};
-    (state=hungry) & gotleft & gotright : eating;
-    (state=hungry) : hungry; -- don't have chopsticks
-    (state=eating) : {eating, done};
-    (state=done) : thinking;
-    TRUE : state;
-  esac;
+    next(left)  := case
+      (state = done) : nobody; -- drop chopstick
+      --
+      -- if hungry and left chopstick is free, take it
+      --
+      (state=hungry) & leftfree & (ticket = i) : i;
+      TRUE : left;
+    esac;
 
--- add fairness constraints here
+    next(right) := case
+      (state = done) : nobody; -- drop chopstick
+      --
+      -- if hungry and have left chopstick and right is free, take it
+      --
+      (state=hungry) & gotleft & rightfree & (ticket = i) : i; 
+      TRUE : right;
+    esac;
 
--- add specifications here 
+    next(state) := case
+      (state=thinking) : {thinking, hungry};
+      (state=hungry) & gotleft & gotright : eating;
+      (state=hungry) : hungry; -- don't have chopsticks
+      (state=eating) : {eating, done};
+      (state=done) : thinking;
+      TRUE : state;
+    esac;
 
-SPEC -- safety:
-  AG ((state = eating) -> (gotleft & gotright))
+  -- fairness
+  FAIRNESS running
+  FAIRNESS !(state = eating)
 
-SPEC -- liveness:
-  AG ((state = hungry) -> AF (state = eating))
+  -- safety
+  SPEC AG ((state = eating) -> (gotleft & gotright))
+
+  -- liveness
+  SPEC AG ((state = hungry) -> AF (state = eating))
+  -- SPEC EG ((state = hungry) -> AF (state = eating))
+  -- SPEC EX ((state = hungry) -> AF (state = eating))
